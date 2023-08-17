@@ -7,22 +7,18 @@
 const hre = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const currentTimeStampInSeconds = Math.round(Date.now()/1000);
+const ONE_YEAR_IN_SECONDS = 365 * 24 * 60 * 60;
+const unlockedTime = currentTimeStampInSeconds + ONE_YEAR_IN_SECONDS;
 
-  const lockedAmount = hre.ethers.parseEther("0.001");
+const lockedAmount = hre.ethers.parseEther("1");
 
-  const lock = await hre.ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
+const MyTest = await hre.ethers.getContractFactory("MyTest");
+const myTest = await MyTest.deploy(unlockedTime, {value: lockedAmount});
+console.log(myTest);
+await myTest.waitForDeployment();
+console.log(`Contract is deployed to ${myTest.target}`);
 
-  await lock.waitForDeployment();
-
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
 }
 
 // We recommend this pattern to be able to use async/await everywhere
