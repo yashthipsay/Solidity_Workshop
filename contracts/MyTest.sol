@@ -20,6 +20,30 @@ contract ContractA{
         val = conB.stuff1(_fail);
 
     }
+
+    function callStuff2(bool _fail) external {
+        // In this function, based on the stuff1 value, a revert message or a sunccess message is sent
+        // in the funcParams variable, the sucess value is encoded i.e. bytecode level interaction happens
+        // then the function is called and and success or variable is recorded and a success or revert message is sent according to that
+        bool success;
+        bytes memory returnValueEncoded;
+        bytes memory funcParams = abi.encodeWithSelector(conB.stuff1.selector, _fail);
+        (success, returnValueEncoded) = address(conB).call(funcParams);
+
+        if(success){
+            val = abi.decode(returnValueEncoded, (uint256));
+        }
+        else {
+            // Assume a revert(and not a user defined function)
+            assembly {
+                // Remove the function seector
+                returnValueEncoded := add(returnValueEncoded, 0x04)
+
+            }
+            string memory revertReason = abi.decode(returnValueEncoded, (string));
+            revert(revertReason);
+        }
+    }
     uint256 public val2;
 }
 
