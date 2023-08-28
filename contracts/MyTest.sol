@@ -31,6 +31,7 @@ contract ContractA{
         (success, returnValueEncoded) = address(conB).call(funcParams);
 
         if(success){
+            // value is returned according to the return type of stuff1
             val = abi.decode(returnValueEncoded, (uint256));
         }
         else {
